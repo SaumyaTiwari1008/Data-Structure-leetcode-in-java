@@ -1,0 +1,40 @@
+class Solution {
+    public List<List<Integer>> generate(int n) {
+        List<List<Integer>> dp = new ArrayList<List<Integer>>();
+        ArrayList<Integer> sp = new ArrayList<Integer>();
+         sp.add(1);
+         dp.add(sp);
+         if(n==1)
+         return dp;
+          
+          ArrayList<Integer> sp1 = new ArrayList<Integer>();
+          sp1.add(1);
+          sp1.add(1);
+          dp.add(sp1);
+
+          for(int i=2;i<n;i++)
+          {
+              ArrayList<Integer> sp2 = new ArrayList<Integer>();
+              sp2.add(1);
+              int f,s;
+              f=0;s=1;
+              List<Integer> w = dp.get(i-1);
+              int cap=w.size();
+
+              while(s<cap)
+              {
+                  int sum=w.get(f)+w.get(s);
+                  f++;s++;
+                   sp2.add(sum);
+              }
+                 sp2.add(1);
+                 dp.add(sp2);
+             
+
+          }
+          return dp;
+
+
+
+    }
+}
