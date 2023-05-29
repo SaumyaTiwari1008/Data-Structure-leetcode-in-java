@@ -1,0 +1,56 @@
+import java.util.*;
+class Solution{
+    public static void main(String args[])
+    {
+        int cap,items;
+        Scanner sc=new Scanner(System.in);
+        cap=sc.nextInt();
+        items=sc.nextInt();
+        int wt[]=new int[items];
+        int val[]=new int[items];
+        
+        for(int i=0;i<items;i++)
+        wt[i]=sc.nextInt();
+        
+        for(int i=0;i<items;i++)
+        val[i]=sc.nextInt();
+        
+        knapsack(items,cap,wt,val);
+        
+    }
+    public static void knapsack(int items,int cap,int wts[],int values[])
+    {
+        int dp[]=new int[cap+1];
+       
+       for(int bagc=1;bagc<=cap;bagc++)
+       {
+           int max=0;
+                for(int j=0;j<items;j++)
+           { 
+               
+               if(wts[j]<=bagc)
+               {
+               int rem=bagc-wts[j];
+               int remv=dp[rem];
+               int total=remv+values[j];
+               
+               if(total>max)
+               max=total;
+               }
+            }
+             dp[bagc]=max;
+           }
+          
+            System.out.println(dp[cap]);
+          
+       }
+        
+        
+       
+        
+    
+   public static int max(int a,int b)
+   {
+       return a>b?a:b;
+   }
+}
