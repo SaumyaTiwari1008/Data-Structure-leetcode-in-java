@@ -1,0 +1,145 @@
+#include <iostream>
+#include <unordered_map>
+#include <unordered_set>
+#include <stack>
+
+using namespace std;
+
+class State {
+public:
+    string name;
+    unordered_map<char, State*> transitions;
+
+    State(string name) {
+        this->name = name;
+    }
+
+    void addTransition(char symbol, State* state) {
+        transitions[symbol] = state;
+    }
+
+    State* getTransition(char symbol) {
+        if (transitions.find(symbol) != transitions.end()) {
+            return transitions[symbol];
+        }
+        return nullptr;
+    }
+};
+
+class DFA {
+private:
+    string regex;
+    State* startState;
+    State* currentState;
+    unordered_set<State*> acceptingStates;
+
+public:
+    DFA(string regex) {
+        this->regex = regex;
+        this->startState = new State("S");
+        this->currentState = this->startState;
+    }
+
+    void construct() {
+        stack<char> charStack;
+        for (char c : regex) {
+            if (c == '(') {
+                charStack.push('(');
+            } else if (c == ')') {
+                processStack(charStack);
+            } else if (c == '*') {
+                processStar(charStack);
+            } else if (c == '+') {
+                processPlus(charStack);
+            } else if (c == '|') {
+                processUnion(charStack);
+            } else {
+                State* state = new State(string(1, c));
+                currentState->addTransition(c, state);
+                currentState = state;
+            }
+        }
+
+        processStack(charStack);
+    }
+
+    void processStack(stack<char>& charStack) {
+        while (!charStack.empty() && charStack.top() != '(') {
+            char top = charStack.top();
+            charStack.pop();
+            if (top == '.') {
+                processConcatenation();
+            } else if (top == '|') {
+                processUnion(charStack);
+            } else {
+                charStack.push(top);
+                break;
+            }
+        }
+    }
+
+    void processConcatenation() {
+        State* state = new State(".");
+        state->addTransition('\0', currentState->getTransition('\0'));
+        currentState->addTransition('\0', state);
+        currentState = state;
+    }
+
+    void processStar(stack<char>& charStack) {
+        State* state = new State("*");
+        state->addTransition('\0', currentState);
+        currentState->addTransition('\0', state);
+        currentState = state;
+    }
+
+    void processPlus(stack<char>& charStack) {
+        State* state = new State("+");
+        state->addTransition('\0', currentState);
+        currentState = state;
+    }
+
+    void processUnion(stack<char>& charStack) {
+        State* state = new State("|");
+        state->addTransition('\0', currentState);
+        currentState = state;
+        charStack.push('|');
+    }
+
+    void reset() {
+        currentState = startState;
+    }
+
+    void addAcceptingState(State* state) {
+        acceptingStates.insert(state);
+    }
+
+    bool accepts(string inputString) {
+        reset();
+        for (char c : inputString) {
+            State* transitionState = currentState->getTransition(c);
+            if (transitionState != nullptr) {
+                currentState = transitionState;
+            } else {
+                return false;
+            }
+        }
+        return acceptingStates.count(currentState) > 0;
+    }
+};
+
+int main() {
+    string regex;
+    cout << "Enter the regular expression: ";
+    getline(cin, regex);
+    DFA dfa(regex);
+    dfa.construct();
+
+    string inputString;
+    cout << "Enter the input string: ";
+    getline(cin, inputString);
+    bool accepts = dfa.accepts(inputString);
+
+    cout << "Accepts input string? " << (accepts ? "Yes" : "No") << endl;
+
+    return 0;
+}
