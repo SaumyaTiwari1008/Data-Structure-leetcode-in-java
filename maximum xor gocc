@@ -1,0 +1,56 @@
+
+
+import java.util.*;
+import java.lang.*;
+import java.io.*;
+
+/* Name of the class has to be "Main" only if the class is public. */
+public class Main
+{
+	public static void main (String[] args) throws java.lang.Exception
+	{
+		// your code goes here
+		Scanner sc =new Scanner(System.in);
+	 int t=sc.nextInt();
+	 while(t-->0)
+	 {
+	     int n=sc.nextInt();
+	     int arr[]=new int[n];
+	     
+	     for(int i=0;i<n;i++)
+	     {
+	         arr[i]=sc.nextInt();
+	     }
+	     Arrays.sort(arr);
+	     int q=sc.nextInt();
+	     
+	     for(int i=1;i<=q;i++)
+	     {
+	         
+	         int x=sc.nextInt();
+	         int m=sc.nextInt();
+	         int ans=calc(arr,x,m);
+	         System.out.println(ans);
+	     }
+	     
+	 }
+	}
+	public static int calc(int []arr,int x,int m){
+	    int ans=-1;
+	    int max=Integer.MIN_VALUE;
+	    int f;
+	   for(int i=0;i<arr.length;i++)
+	{
+	    if(arr[i]<=m)
+	    {
+	         f=arr[i]^x;
+	        if(f>max)
+	        {
+	            max=f;
+	            ans=arr[i];
+	        }
+	    }
+	}
+	return ans;
+	}
+}
